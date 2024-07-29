@@ -1,3 +1,4 @@
+
 import './App.css';
 import React, { Component } from 'react';
 import Clarifai from 'clarifai';
@@ -77,8 +78,8 @@ fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VE
     .catch(error => console.log('error', error));
 */
 
-const app = new.Clarifai.App({
-  apikey: '1376e912774845f093ca0507ae3d202c'
+const clarifaiApp = new Clarifai.App({
+  apiKey: '1376e912774845f093ca0507ae3d202c'
 });
 
 class App extends Component {
@@ -86,15 +87,26 @@ class App extends Component {
     super();
     this.state = {
       input: '',
+      imageUrl: ''
     }
   }
 
   onInputChange = (event) =>{
-    console.log(event.target.value);
+    this.setState({input: event.target.value});
   }
 
   onButtonSubmit = () =>{
     console.log('click');
+    this.setState({imageUrl: this.state.input});
+    clarifaiApp.models.predict(Clarifai.COLOR_MODEL, this.state.input)
+    .then(response =>{
+      console.log(response);
+    },
+    function (err){
+      // Possible error
+    }
+
+   );
   }
 
 

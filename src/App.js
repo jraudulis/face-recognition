@@ -7,13 +7,14 @@ import Navigation from './components/Navigation/Navigation';
 import Logo from './components/Logo/Logo';
 import Rank from './components/Rank/Rank';
 import ImageInputLink from './components/ImageInputLink/ImageInputLink';
+import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 
-/*const returnClarifaiRequestOptions = (imageUrl) =>{
+  const returnClarifaiRequestOptions = (imageUrl) =>{
 
   const PAT = '1376e912774845f093ca0507ae3d202c';
   const USER_ID = 'jr291092';
-  const APP_ID = 'face-recognition';
-  const MODEL_ID = 'face-detection';
+  const APP_ID = 'main';
+  const MODEL_ID = 'color-recognition';
   const IMAGE_URL = imageUrl;
 
   const raw = JSON.stringify({
@@ -25,7 +26,7 @@ import ImageInputLink from './components/ImageInputLink/ImageInputLink';
         {
             "data": {
                 "image": {
-                    "url": IMAGE_URL
+                    "url": imageUrl
                     // "base64": IMAGE_BYTES_STRING
                 }
             }
@@ -41,7 +42,7 @@ const requestOptions = {
     },
     body: raw
 };
-// return requestOptions;
+ return requestOptions;
 }
 
 
@@ -50,37 +51,10 @@ const requestOptions = {
 // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
 // this will default to the latest version_id
 
-fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
-    .then(response => response.json())
-    .then(result => {
 
-        const regions = result.outputs[0].data.regions;
-
-        regions.forEach(region => {
-            // Accessing and rounding the bounding box values
-            const boundingBox = region.region_info.bounding_box;
-            const topRow = boundingBox.top_row.toFixed(3);
-            const leftCol = boundingBox.left_col.toFixed(3);
-            const bottomRow = boundingBox.bottom_row.toFixed(3);
-            const rightCol = boundingBox.right_col.toFixed(3);
-
-            region.data.concepts.forEach(concept => {
-                // Accessing and rounding the concept value
-                const name = concept.name;
-                const value = concept.value.toFixed(4);
-
-                console.log(`${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`);
-                
-            });
-        });
-
-    })
-    .catch(error => console.log('error', error));
-*/
-
-const clarifaiApp = new Clarifai.App({
-  apiKey: '1376e912774845f093ca0507ae3d202c'
-});
+/*const clarifaiApp = new Clarifai.App({
+  apiKey: 'eeed0b6733a644cea07cf4c60f87ebb7'
+});*/
 
 class App extends Component {
   constructor() {
@@ -93,11 +67,18 @@ class App extends Component {
 
   onInputChange = (event) =>{
     this.setState({input: event.target.value});
+    console.log(event.target.value);
   }
 
   onButtonSubmit = () =>{
-    console.log('click');
-    this.setState({imageUrl: this.state.input});
+   this.setState({imageUrl: this.state.input});
+    fetch("https://api.clarifai.com/v2/models/"+ 'color-recognition' + "/outputs", returnClarifaiRequestOptions(this.state.input))
+    .then(response => response.json())
+    .then(result => console.log(result))
+    .catch(error => console.log('error', error));
+
+
+    /*this.setState({imageUrl: this.state.input});
     clarifaiApp.models.predict(Clarifai.COLOR_MODEL, this.state.input)
     .then(response =>{
       console.log(response);
@@ -106,7 +87,7 @@ class App extends Component {
       // Possible error
     }
 
-   );
+   );*/
   }
 
 
@@ -120,7 +101,7 @@ class App extends Component {
       <Logo />
       <Rank />
       <ImageInputLink onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
-      {/*<FaceRecognition />}*/}
+      <FaceRecognition imageUrl={this.state.imageUrl}/>
     </div>
   );
   } 

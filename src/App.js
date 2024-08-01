@@ -9,12 +9,13 @@ import Rank from './components/Rank/Rank';
 import ImageInputLink from './components/ImageInputLink/ImageInputLink';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 
+
   const returnClarifaiRequestOptions = (imageUrl) =>{
 
-  const PAT = '1376e912774845f093ca0507ae3d202c';
+  const PAT = '36108aa38dd744aa9d67c46f6c47a3eb';
   const USER_ID = 'jr291092';
-  const APP_ID = 'main';
-  const MODEL_ID = 'color-recognition';
+  const APP_ID = 'face-recognition';
+  const MODEL_ID = 'face-detection';
   const IMAGE_URL = imageUrl;
 
   const raw = JSON.stringify({
@@ -26,7 +27,7 @@ import FaceRecognition from './components/FaceRecognition/FaceRecognition';
         {
             "data": {
                 "image": {
-                    "url": imageUrl
+                    "url": IMAGE_URL
                     // "base64": IMAGE_BYTES_STRING
                 }
             }
@@ -52,10 +53,6 @@ const requestOptions = {
 // this will default to the latest version_id
 
 
-/*const clarifaiApp = new Clarifai.App({
-  apiKey: 'eeed0b6733a644cea07cf4c60f87ebb7'
-});*/
-
 class App extends Component {
   constructor() {
     super();
@@ -72,9 +69,9 @@ class App extends Component {
 
   onButtonSubmit = () =>{
    this.setState({imageUrl: this.state.input});
-    fetch("https://api.clarifai.com/v2/models/"+ 'color-recognition' + "/outputs", returnClarifaiRequestOptions(this.state.input))
+    fetch("https://api.clarifai.com/v2/models/"+ 'face-detection' + "/outputs", returnClarifaiRequestOptions(this.state.input))
     .then(response => response.json())
-    .then(result => console.log(result))
+    .then(result => console.log(result.outputs[0].data.regions[0].region_info.bounding_box))
     .catch(error => console.log('error', error));
 
 

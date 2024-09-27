@@ -1,7 +1,5 @@
-
 import './App.css';
 import React, { Component } from 'react';
-import Clarifai from 'clarifai';
 import ParticlesBg from 'particles-bg'
 import Navigation from './components/Navigation/Navigation';
 import Register from './components/Register/Register';
@@ -12,53 +10,11 @@ import ImageInputLink from './components/ImageInputLink/ImageInputLink';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 
 
-  const returnClarifaiRequestOptions = (imageUrl) =>{
-
-  const PAT = '36108aa38dd744aa9d67c46f6c47a3eb';
-  const USER_ID = 'jr291092';
-  const APP_ID = 'face-recognition';
-  const MODEL_ID = 'face-detection';
-  const IMAGE_URL = imageUrl;
-
-  const raw = JSON.stringify({
-    "user_app_id": {
-        "user_id": USER_ID,
-        "app_id": APP_ID
-    },
-    "inputs": [
-        {
-            "data": {
-                "image": {
-                    "url": IMAGE_URL
-                    // "base64": IMAGE_BYTES_STRING
-                }
-            }
-        }
-    ]
-});
-
-const requestOptions = {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Authorization': 'Key ' + PAT
-    },
-    body: raw
-};
- return requestOptions;
-}
-
-
-
 // NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
 // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
 // this will default to the latest version_id
 
-
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
+const initialState = {
       input: '',
       imageUrl: '',
       box: {},
@@ -72,6 +28,11 @@ class App extends Component {
         joined: ''
       }
     }
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = initialState;
   }
 
   loadUser = (data) =>{
@@ -108,7 +69,11 @@ class App extends Component {
 
   onButtonSubmit = () =>{
    this.setState({imageUrl: this.state.input});
-    fetch("https://api.clarifai.com/v2/models/"+ 'face-detection' + "/outputs", returnClarifaiRequestOptions(this.state.input))
+    fetch('http://localhost:3001/imageUrl', {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ input: this.state.input })
+        })
     .then(response => response.json())
     .then(result => {
       if (result) {
@@ -131,7 +96,7 @@ class App extends Component {
 
   onRouteChange = (route)=>{
     if (route === 'signout'){
-      this.setState({isSignedIn: false})
+      this.setState(initialState)
     } else if(route === 'home') {
       this.setState({isSignedIn: true})
     }

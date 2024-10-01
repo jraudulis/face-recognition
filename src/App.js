@@ -69,7 +69,7 @@ class App extends Component {
 
   onButtonSubmit = () =>{
    this.setState({imageUrl: this.state.input});
-    fetch(' https://desolate-dusk-53844-94787e098d83.herokuapp.com/imageUrl', {
+    fetch('https://facerecapi-h3rd.onrender.com/imageUrl', {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ input: this.state.input })
@@ -77,7 +77,7 @@ class App extends Component {
     .then(response => response.json())
     .then(result => {
       if (result) {
-        fetch(' https://desolate-dusk-53844-94787e098d83.herokuapp.com/image', {
+        fetch('https://facerecapi-h3rd.onrender.com/image', {
           method: 'put',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: this.state.user.id })

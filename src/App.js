@@ -45,18 +45,27 @@ class App extends Component {
     }});
   }
 
-  detectFaceLocation = (data) =>{
-    const FaceDataRegions = (data.outputs[0].data.regions[0].region_info.bounding_box);
-    const image = document.getElementById('inputImage');
-    const width = Number(image.width);
-    const height = Number(image.height);
-     return{
-      bottomRow: height - (FaceDataRegions.bottom_row * height),
-      leftColumn: FaceDataRegions.left_col * width,
-      rightColumn: width - (FaceDataRegions.right_col * width),
-      topRow: FaceDataRegions.top_row * height
-    }
+  detectFaceLocation = (data) => {
+  // Safely access the nested properties using optional chaining
+  const FaceDataRegions = data?.outputs?.[0]?.data?.regions?.[0]?.region_info?.bounding_box;
+
+  if (!FaceDataRegions) {
+    console.error('Face data regions are not available');
+    return {};  // Return an empty object or handle the error as needed
   }
+
+  const image = document.getElementById('inputImage');
+  const width = Number(image.width);
+  const height = Number(image.height);
+
+  return {
+    bottomRow: height - (FaceDataRegions.bottom_row * height),
+    leftColumn: FaceDataRegions.left_col * width,
+    rightColumn: width - (FaceDataRegions.right_col * width),
+    topRow: FaceDataRegions.top_row * height
+  };
+}
+
  
   displayFaceBox = (box) =>{
     console.log(box);
@@ -76,6 +85,8 @@ class App extends Component {
         })
     .then(response => response.json())
     .then(result => {
+      console.log('Face detection result:', result); // Log result to see structure
+
       if (result) {
         fetch('https://facerecapi-h3rd.onrender.com/image', {
           method: 'put',

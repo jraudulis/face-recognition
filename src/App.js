@@ -9,11 +9,6 @@ import Rank from './components/Rank/Rank';
 import ImageInputLink from './components/ImageInputLink/ImageInputLink';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 
-
-// NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
-// https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
-// this will default to the latest version_id
-
 const initialState = {
       input: '',
       imageUrl: '',
@@ -47,12 +42,7 @@ class App extends Component {
 
   detectFaceLocation = (data) => {
   // Safely access the nested properties using optional chaining
-  const FaceDataRegions = data?.outputs?.[0]?.data?.regions?.[0]?.region_info?.bounding_box;
-
-  if (!FaceDataRegions) {
-    console.error('Face data regions are not available');
-    return {};  // Return an empty object or handle the error as needed
-  }
+  const FaceDataRegions = data.outputs?.[0].data.regions.[0].region_info.bounding_box;
 
   const image = document.getElementById('inputImage');
   const width = Number(image.width);
@@ -85,8 +75,6 @@ class App extends Component {
         })
     .then(response => response.json())
     .then(result => {
-      console.log('Face detection result:', result); // Log result to see structure
-
       if (result) {
         fetch('https://facerecapi-h3rd.onrender.com/image', {
           method: 'put',
